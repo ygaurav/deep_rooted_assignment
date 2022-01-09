@@ -17,7 +17,7 @@ class CurrencyPairService implements ICurrencyPairService {
   @override
   fetchCurrencyPairDetail(String name) async {
 
-    final response = await client.get(Uri.parse("https://www.bitstamp.net/api/v2/ticker/$name"));
+    final response = await client.get(Utility.withPath(Utility.tickerPath, name));
 
     var currencyPair = CurrencyPair.fromJson(name, json.decode(response.body));
 
@@ -26,13 +26,24 @@ class CurrencyPairService implements ICurrencyPairService {
 
   @override
   fetchOrderBook(String name) async {
-    final response = await client.get(Uri.parse("https://www.bitstamp.net/api/v2/order_book/$name"));
+    
+    final response = await client.get(Utility.withPath(Utility.orderBookPath, name));
 
     var currencyPair = OrderBook.fromJson(json.decode(response.body));
 
     return currencyPair;
-
   }
 
 
+}
+
+class Utility {
+  static const tickerPath = "ticker";
+  static const orderBookPath = "order_book";
+
+  static const basePath = "www.bitstamp.net";
+
+  static Uri withPath(String service, String currencyName) {
+    return Uri(scheme: "https", host: basePath, pathSegments: ["api", "v2", service, currencyName]);
+  }
 }
