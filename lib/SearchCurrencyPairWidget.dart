@@ -1,4 +1,5 @@
 import 'package:deep_rooted/CurrencyPairDetailWidget.dart';
+import 'package:deep_rooted/OrderBookWidget.dart';
 import 'package:deep_rooted/SearchCurrencyPairViewModel.dart';
 import 'package:deep_rooted/ViewModelState.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,7 @@ class SearchCurrencyPairWidget extends StatefulWidget {
 
 class _SearchCurrencyPairWidgetState extends State<SearchCurrencyPairWidget> {
 
+  bool showOrderBook = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +51,19 @@ class _SearchCurrencyPairWidgetState extends State<SearchCurrencyPairWidget> {
                 return Column(
                   children: [
                     CurrencyPairDetailWidget(viewModelState: viewModel.modelState),
+                    if (viewModel.modelState.data != null)
+                      Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextButton(onPressed: _updateOrderBookButton, child: showOrderBook ? const Text("HIDE ORDER BOOK") : const Text("SHOW ORDER BOOK")),
+                    )
                   ],
                 );
               }),
+              if(showOrderBook)
+                Consumer<SearchCurrencyPairViewModel>(builder: (context, viewModel, abc) {
+                  return OrderBookWidget(viewModelState: viewModel.orderBookState);
+                })
             ],
           ),
         ),
@@ -67,6 +79,9 @@ class _SearchCurrencyPairWidgetState extends State<SearchCurrencyPairWidget> {
   }
 
   void _updateOrderBookButton() {
+    setState(() {
+      showOrderBook = !showOrderBook;
+    });
   }
 
 }
